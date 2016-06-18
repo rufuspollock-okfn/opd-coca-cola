@@ -1,0 +1,146 @@
+{% extends "browser/base.html" %}
+{% load static %}
+{% load browser_extras %}
+{% block content %}
+
+
+<div class="list-header">
+      <div class="container">
+
+            <table border="0" cellspacing="0px" cellpadding="0px">
+            <tr>
+                <td>
+
+      						<img class="thumbnail-list"
+                  src="{{MEDIA_URL}}brand/{{bsin_detail.BSIN}}.jpg"
+                  title="{{bsin_detail.BRAND_NM}}"
+                  alt="{{bsin_detail.BRAND_NM}}"
+                  onerror="this.src='/static/browser/img/coming-soon.jpg';">
+                </td>
+
+				        <td>
+                    <h1>{{bsin_detail.BRAND_NM}}</h1>
+					          <b>Brand name</b> : {{bsin_detail.BRAND_NM}}<br>
+                    {% if bsin_detail.OWNER_CD %}
+                    <b>Owner</b> : <a  href="./../owner/{{bsin_detail.OWNER_CD.OWNER_CD|stringformat:"06d"}}" >{{bsin_detail.OWNER_CD.OWNER_NM}}</a><br><br>
+                    {% endif %}
+                    <b>Website</b> : <a href="{{BRAND_LINK}}" target="_blank" rel="nofollow">{{bsin_detail.BRAND_LINK}}</a>
+                </td>
+            </tr>
+          </table>
+  </div>
+</div>
+	{% if gtin_list %}
+
+		{% for Gtin in gtin_list %}
+
+    <div class="list-item">
+  		<div class="container">
+
+        	<div itemscope itemtype="http://schema.org/Product">
+
+                <h2>
+                  {% if Gtin.GCP_CD %}
+                    <img align="center" src="{% with 'browser/img/flag_48/'|add:Gtin.GCP_CD.GLN_COUNTRY_ISO_CD|add:'.png' as image_static1 %}{% static image_static1 %}{% endwith %}" >
+                  {% endif %}
+                  <b>{{Gtin.GCP_CD.GLN_COUNTRY_ISO_CD}} </b> {{Gtin.GTIN_CD}}
+                </h2>
+                <table>
+                    <tr>
+                        <td>
+                            <a  href="./../gtin/{{Gtin.GTIN_CD}}" >
+
+              								<img itemprop="image"
+              									class="thumbnail-list"
+              									src="{{MEDIA_URL}}gtin/{{Gtin.GTIN_CD}}.jpg"
+              									alt="{{bsin_detail.BRAND_NM}} - {% if Gtin.PRODUCT_LINE %} {{Gtin.PRODUCT_LINE}} - {% endif %} {{Gtin.GTIN_NM}} {{Gtin.GTIN_CD}} {{Gtin.UPC_CD}}"
+              									title="{{bsin_detail.BRAND_NM}} - {% if Gtin.PRODUCT_LINE %} {{Gtin.PRODUCT_LINE}} - {% endif %} {{Gtin.GTIN_NM}} {{Gtin.GTIN_CD}} {{Gtin.UPC_CD}}"
+                                onerror="this.src='/static/browser/img/coming-soon.jpg';">
+              							</a>	<!-- / UPC -->
+                            {% if Gtin.PKG_UNIT > 1 %} <br><b>Pack of {{Gtin.PKG_UNIT}} units</b> {% endif %}
+                        </td>
+                        <td>
+
+                                <b>GTIN-13 / EAN-13</b> : <span class="gtin-code" itemprop="gtin13" >{{Gtin.GTIN_CD}}</span><br>
+                                {% if Gtin.GTIN_CD|slice:":1" = "0" %}
+                                  {% if Gtin.GTIN_CD|slice:":5" = "00000" %}
+                                    <b>GTIN-8 / EAN-8</b> : <span class="gtin-code" itemprop="gtin13" >{{ Gtin.GTIN_CD|slice:"5:13" }}</span><br>
+                                  {% else %}
+                                    <b>GTIN-12 / UPC</b> : <span class="gtin-code" itemprop="gtin13" >{{ Gtin.GTIN_CD|slice:"1:13" }}</span><br>
+                                  {% endif %}
+                                {% endif %}
+
+
+                                {% if Gtin.GCP_CD %}
+                                  <b>GCP</b> :
+                  								<img align="center" src="{% with 'browser/img/flag_16/'|add:Gtin.GCP_CD.GLN_COUNTRY_ISO_CD|add:'.png' as image_static %}{% static image_static %}{% endwith %}" >
+                                  <span class="gtin-code">{{Gtin.GCP_CD}}</span>
+                								  <br>
+                                {% endif %}
+
+                                <br>
+
+
+                                <b>Commercial name</b> : {% if Gtin.GTIN_NM %} <span itemprop="name">{{Gtin.GTIN_NM}}</span>{% else %} <span itemprop="name">Name of {{Gtin.GTIN_CD}} coming soon</span> {% endif %}<br>
+                                <span itemprop="description">
+                                <b>Brand</b> : {{bsin_detail.BRAND_NM}}<br>
+
+                                {% if Gtin.PRODUCT_LINE %} <b>Product line</b> : {{Gtin.PRODUCT_LINE}} <br> {% endif %}
+
+                                {% if Gtin.M_G or M_OZ %}
+                                    <b>Weight</b> :
+                                {% endif %}
+                                {% if Gtin.M_G %}
+                                    {% if Gtin.M_G  >= 1000 %}
+                                        {{Gtin.M_G|to_kg}} kg
+                                    {% else %}
+                                         {{Gtin.M_G|floatformat}} g
+                                    {% endif %}
+                                    {% if Gtin.M_OZ %} / {% else %} <br> {% endif %}
+                                {% endif %}
+                                {% if Gtin.M_OZ %}{{Gtin.M_OZ|floatformat}} oz<br> {% endif %}
+
+                                {% if Gtin.M_ML or Gtin.M_FLOZ %} <b>Volume</b> : {% endif %}
+                                    {% if Gtin.M_ML %}
+                                        {% if Gtin.M_ML >= 1000 %}
+                                            {{Gtin.M_ML|to_liter|floatformat}}L
+                                         {% else %}
+                                            {{Gtin.M_ML|floatformat}}ml
+                                        {% endif %}
+                                        {% if Gtin.M_FLOZ %}  / {% else %} <br> {% endif %}
+                                    {% endif %}
+                                    {% if Gtin.M_FLOZ %}
+                                        {{Gtin.M_FLOZ|floatformat}} floz<br>
+                                    {% endif %}
+
+                                {% if Gtin.M_ABV %} <b>Alcohol</b> : {{Gtin.M_ABV|floatformat}} % vol.<br> {% endif %}
+                                {% if Gtin.M_ABW %} <b>Alcohol</b> : {{Gtin.M_ABW|floatformat}} % vol.<br> {% endif %}
+
+                              <b>Number of unit</b> : {{Gtin.PKG_UNIT}}
+
+                                {% if Gtin.nutrition.SYNC_DT %}
+
+                                  <br>
+                  								<a  href="gtin-{{Gtin.GTIN_CD}}" >
+                                    <button type="button" class="btn btn-xs btn-danger">Nutrition Facts available</button>
+                                  </a>
+
+                								{% endif %}
+                                <br><b>Packaging</b> : {{Gtin.PACKAGING_CD.PACKAGING_NM}}
+                                </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+      <hr>
+    </div>
+  </div>
+    {% endfor %}
+
+	{% else %}
+	<p>No products for this brand</p>
+    {% endif %}
+</div>
+
+{% endblock %}

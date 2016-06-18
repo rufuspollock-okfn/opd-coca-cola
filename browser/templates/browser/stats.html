@@ -1,0 +1,22 @@
+{% extends "browser/base.html" %}
+{% load static %}
+{% load browser_extras %}
+{% block content %}
+
+
+<div class="container">
+
+  <div class="page-header">
+    <h1>Global statistics</h1>
+  </div>
+
+  Total number of GTIN : {{gtin_total_count.GTIN_CD__count}} <br>
+
+  <h2>Number of GTIN per country</h2>
+  {% for gtin in gtin_count %}
+    {{gtin.GCP_CD__GLN_COUNTRY_ISO_CD}} -> {{gtin.dcount}} | 
+  {% endfor %}
+
+</div>
+
+{% endblock %}
